@@ -1,4 +1,3 @@
-// import { Card } from './card.jsx'
 import { Layout } from './weather-widget/layout.jsx'
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js';
