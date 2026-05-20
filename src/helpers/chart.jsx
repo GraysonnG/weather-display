@@ -35,13 +35,13 @@ export const TempChart = ({temps}) => {
             bottom: '-8',
             width: '93.6%',
             height,
-            opacity: 0.3,
+            opacity: 0.6,
         }}
         height={height}
         viewBox={`0 0 ${viewboxWidth} ${height}`}
         preserveAspectRatio="none"
     >
-        <path d={path} fill="none" stroke="#56a0ee" stroke-width="2" stroke-dasharray="4" />
+        <path d={path} fill="none" stroke="#56a0ee" stroke-width="2" stroke-dasharray="8" />
         {points.map((p, i) => (
             <circle key={i} cx={p.x} cy={p.y} r="8" fill="#56a0ee" />
         ))}
