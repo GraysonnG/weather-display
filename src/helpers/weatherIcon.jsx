@@ -64,7 +64,6 @@ const MAP = {
 }
 
 export const getIconUrlFromCode = (code, night = false) => {
-    console.log(code, MAP[code])
     let iconName = (MAP[`${code}`] ?? "clear-day")
     if (night) iconName = iconName.replaceAll("-day", "-night")
     const data = loadImage(`weather/${iconName}.svg`)

@@ -7,11 +7,8 @@ export const getOpenWeatherMapData = async (
     lat = 39.0321,
     lon = -77.4161
 ) => {
-    // const url = `${apiURL}/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`
-    // const data = await fetch(url)
-    // const rawData = await data.json()
     const rawData = exampleResponse
-    return {
+    const data = {
         current: {
             ...rawData.current,
             today: rawData.daily[0],
@@ -22,6 +19,10 @@ export const getOpenWeatherMapData = async (
         }))],
         daily: [...rawData.daily.slice(1, 11)],
     }
+
+    doLogs(data)
+
+    return data
 }
 
 const getNight = (hourlyItem, dailyItems) => {
@@ -42,6 +43,11 @@ const getNight = (hourlyItem, dailyItems) => {
             }
         })
 
-
     return night
+}
+
+const doLogs = (data) => {
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    console.log(`Today - Low: ${data.current.today.temp.min}, High: ${data.current.today.temp.max} | ${data.hourly.map(d => `[${(new Date(d.dt * 1000)).getHours() + 1}:00: ${d.temp}]`).join(" ")}`)
+    console.log(`${data.daily.map(d => `${dayNames[(new Date(d.dt * 1000)).getDay() ?? 0]}: ${d.temp.day}`).join(" ")}`)
 }
