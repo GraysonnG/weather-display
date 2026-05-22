@@ -17,15 +17,18 @@ const bigTempSectionStyles = {
     justifyContent: 'center',
     alignItems: 'center',
     margin: 0,
-    paddingRight: 15,
     width: '15%',
+    height: 200,
 }
 
 const bigTempItemStyles = {
+    position: 'relative',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    width: '100%',
+    height: '100%',
 }
 
 const bigTempTextStyles = {
@@ -99,10 +102,17 @@ const BigTempSection = ({data}) => {
 
     return (<div style={bigTempSectionStyles}>
         <div style={bigTempItemStyles}>
-            <span style={{fontSize: 24, width: '100%'}}>Currently</span>
-            <span style={title}>{data.temp.toFixed(0)}°</span>
-            <span style={subtitle}>Feels like: {data.feels_like.toFixed(0)}°</span>
-            <span style={subtitle}>High: {data.today.temp.max.toFixed(0)}° - Low: {data.today.temp.min.toFixed(0)}°</span>
+            <img style={{width: '95%', position: 'absolute'}} src={getIconUrlFromCode(data.today.weather[0].id, false)} alt={data.today.weather[0].description} />
+            <div style={{display: 'flex', flexDirection: 'row', position: 'absolute', bottom: 0}}>
+                <div style={{display: 'flex', flexDirection: 'column', marginRight: 30}}>
+                    <span style={{fontSize: 20, fontWeight: 400}}>High</span>
+                    <span style={{fontSize: 48, fontWeight: 800, margin: 0, lineHeight: 1}}>{data.today.temp.max.toFixed(0)}°</span>
+                </div>
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <span style={{fontSize: 20, fontWeight: 400}}>Low</span>
+                    <span style={{fontSize: 48, fontWeight: 800, margin: 0, lineHeight: 1}}>{data.today.temp.min.toFixed(0)}°</span>
+                </div>
+            </div>
         </div>
     </div>)
 }
