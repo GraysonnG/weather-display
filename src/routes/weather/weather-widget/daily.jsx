@@ -2,7 +2,7 @@
 /** @jsx h */
 import { loadImage } from '../../../helpers/imagehelper.js';
 import { mmToInches } from '../../../helpers/imperial.js';
-import { getIconUrlFromCode } from '../../../helpers/weatherIcon.jsx';
+import { getIconUrlFromCode } from './weather_icon.jsx';
 import { h, Fragment } from '../../../lib/jsx.js';
 
 const days = [

@@ -1,8 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx h */
 import { h, Fragment } from '../../../lib/jsx.js';
-import { TempChart } from '../../../helpers/chart.jsx';
-import { getIconUrlFromCode } from '../../../helpers/weatherIcon.jsx';
+import { TempChart } from './chart.jsx';
+import { getIconUrlFromCode } from './weather_icon.jsx';
 
 const sectionStyles = {
     display: 'flex',

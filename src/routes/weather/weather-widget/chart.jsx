@@ -1,6 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx h */
-import { h, Fragment } from '../lib/jsx.js';
+import { h, Fragment } from '../../../lib/jsx.js';
 
 const createTempLinePath = (temps, height, width = 200, padding = 20) => {
     const viewboxWidth = width

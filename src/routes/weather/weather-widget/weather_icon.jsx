@@ -1,9 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx h */
-import { h, Fragment } from '../lib/jsx.js';
+import { h, Fragment } from '../../../lib/jsx.js';
 import fs from 'fs';
 import path from 'path';
-import { loadImage } from './imagehelper.js';
+import { loadImage } from '../../../helpers/imagehelper.js';
 
 const MAP = {
   "200": "scattered-thunderstorms-day",
