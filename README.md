@@ -1,42 +1,9 @@
-# sv
+# Weather E-Ink Display
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Startup
+Run: `npm run dev` to expose this companion app to your network so the pi can talk to it.
 
-## Creating a project
+## Pi Scripts
+Using `scp ./pi_scripts/[script].py piuser@ip:/home/piuser/scripts` upload the pi scripts to your device running pimoroni inky.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.15.3 create --template minimal --no-types --install npm weather-display
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+And using ssh run them with `python [script].py`
