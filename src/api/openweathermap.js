@@ -7,7 +7,8 @@ export const getOpenWeatherMapData = async (
     lat = 39.0321,
     lon = -77.4161
 ) => {
-    const rawData = exampleResponse
+    const res = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`)
+    const rawData = await res.json()
     const data = {
         current: {
             ...rawData.current,
