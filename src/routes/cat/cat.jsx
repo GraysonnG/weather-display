@@ -12,7 +12,7 @@ const imgStyle = {
 export const Cat = () => {
     const catImages = getAllImages("cats")
     const index = Math.round(Math.random() * (catImages.length - 1))
-    console.log(`${index}/${catImages.length}`)
+    console.log(`${index + 2}/${catImages.length}`)
     const imageToShow = catImages[index]
 
     return (<div style={{width: '100%', height: '100%', display: 'flex'}}>

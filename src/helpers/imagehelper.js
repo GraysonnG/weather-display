@@ -21,7 +21,8 @@ export const getAllImages = (relativePathFromStatic) => {
     const fileNames = fs.readdirSync(dirPath)
     return fileNames.map(name => {
         const filePath = path.resolve(dirPath, name)
-        const ext = name.split('.')[1]
+        const split = name.split('.')
+        const ext = split[split.length - 1]
         const mimeType = {
             "png": "image/png",
             "jpg": "image/jpeg",
