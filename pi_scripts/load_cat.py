@@ -5,7 +5,7 @@ from io import BytesIO
 
 display = auto()
 print("Display Auto")
-response = requests.get("http://192.168.1.168:5173/cat")
+response = requests.get("https://creative-cheesecake-3607b7.netlify.app/cat")
 print("Image request complete!")
 img = Image.open(BytesIO(response.content))
 print("Image request processed!")
