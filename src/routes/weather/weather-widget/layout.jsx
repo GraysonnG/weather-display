@@ -26,7 +26,7 @@ const layoutStyle = {
     height: '100%',
     padding: 15,
     borderRadius: 15,
-    border: '2px solid #0002',
+    border: '2px solid #000',
     background: '#fff2'
 }
 
@@ -45,6 +45,5 @@ export const Layout = (data) => (<div style={wrapperStyle}>
     <div style={layoutStyle}>
         <TodaySection currentData={data.current} hourlyData={data.hourly}/>
         <DailySection data={data.daily} />
-        
     </div>
 </div>)

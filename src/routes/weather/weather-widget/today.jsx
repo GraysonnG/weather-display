@@ -57,7 +57,7 @@ const hourStyles = {
     flexDirection: 'column',
     flex: 1,
     alignItems: 'center',
-    borderLeft: '2px solid #0002',
+    borderLeft: '2px solid #000',
     height: 200,
     padding: 5,
 }

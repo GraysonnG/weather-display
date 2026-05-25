@@ -19,7 +19,7 @@ const dailySectionStyle = {
     display: 'flex',
     position: 'relative',
     height: 550,
-    borderTop: '2px solid #0002',
+    borderTop: '2px solid #000',
     paddingTop: 15,
 }
 
@@ -27,7 +27,7 @@ const dayItemStyle = {
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    borderRight: '2px solid #0002',
+    borderRight: '2px solid #000',
     paddingRight: 15,
     paddingLeft: 15,
     alignItems: 'center'
@@ -168,7 +168,7 @@ const moreSectionItemValueStyles = {
 const MoreInfoSection = ({data}) => (<div style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
     <div style={moreSectionRowStyles}>
         <div style={moreSectionColStyles}>
-            <svg style={{width: 50, height: 50}} fill='#56a0ee' stroke='#fff' stroke-width="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M160 384C107 384 64 341 64 288C64 245.5 91.6 209.4 129.9 196.8C128.6 190.1 128 183.1 128 176C128 114.1 178.1 64 240 64C283.1 64 320.5 88.3 339.2 124C353.9 106.9 375.7 96 400 96C444.2 96 480 131.8 480 176C480 181.5 479.4 186.8 478.4 192C478.9 192 479.5 192 480 192C533 192 576 235 576 288C576 341 533 384 480 384L160 384zM161.6 452.2C162.7 449.7 165.2 448 168 448C170.8 448 173.3 449.6 174.4 452.2L204.6 520.4C206.8 525.5 208 530.9 208 536.4C208 558.3 189.9 576 168 576C146.1 576 128 558.3 128 536.4C128 530.9 129.2 525.4 131.4 520.4L161.6 452.2zM313.6 452.2C314.7 449.7 317.2 448 320 448C322.8 448 325.3 449.6 326.4 452.2L356.6 520.4C358.8 525.5 360 530.9 360 536.4C360 558.3 341.9 576 320 576C298.1 576 280 558.3 280 536.4C280 530.9 281.2 525.4 283.4 520.4L313.6 452.2zM435.4 520.4L465.6 452.2C466.7 449.7 469.2 448 472 448C474.8 448 477.3 449.6 478.4 452.2L508.6 520.4C510.8 525.5 512 530.9 512 536.4C512 558.3 493.9 576 472 576C450.1 576 432 558.3 432 536.4C432 530.9 433.2 525.4 435.4 520.4z"/></svg>
+            <svg style={{width: 50, height: 50}} fill='#5080b8' stroke='#fff' stroke-width="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M160 384C107 384 64 341 64 288C64 245.5 91.6 209.4 129.9 196.8C128.6 190.1 128 183.1 128 176C128 114.1 178.1 64 240 64C283.1 64 320.5 88.3 339.2 124C353.9 106.9 375.7 96 400 96C444.2 96 480 131.8 480 176C480 181.5 479.4 186.8 478.4 192C478.9 192 479.5 192 480 192C533 192 576 235 576 288C576 341 533 384 480 384L160 384zM161.6 452.2C162.7 449.7 165.2 448 168 448C170.8 448 173.3 449.6 174.4 452.2L204.6 520.4C206.8 525.5 208 530.9 208 536.4C208 558.3 189.9 576 168 576C146.1 576 128 558.3 128 536.4C128 530.9 129.2 525.4 131.4 520.4L161.6 452.2zM313.6 452.2C314.7 449.7 317.2 448 320 448C322.8 448 325.3 449.6 326.4 452.2L356.6 520.4C358.8 525.5 360 530.9 360 536.4C360 558.3 341.9 576 320 576C298.1 576 280 558.3 280 536.4C280 530.9 281.2 525.4 283.4 520.4L313.6 452.2zM435.4 520.4L465.6 452.2C466.7 449.7 469.2 448 472 448C474.8 448 477.3 449.6 478.4 452.2L508.6 520.4C510.8 525.5 512 530.9 512 536.4C512 558.3 493.9 576 472 576C450.1 576 432 558.3 432 536.4C432 530.9 433.2 525.4 435.4 520.4z"/></svg>
             <span style={moreSectionItemTitleStyles}>Precip</span>
             <span style={moreSectionItemValueStyles}>{mmToInches((data.rain ?? 0)).toFixed(1)} in</span>
             {/* todo: make this a 1-5 scale */}
@@ -182,7 +182,7 @@ const MoreInfoSection = ({data}) => (<div style={{display: 'flex', flexDirection
     </div>
     <div style={moreSectionRowStyles}>
         <div style={moreSectionColStyles}>
-            <svg style={{width: 50, height: 50}} fill='#56a0ee' stroke='#fff' stroke-width="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 576C214 576 128 490 128 384C128 292.8 258.2 109.9 294.6 60.5C300.5 52.5 309.8 48 319.8 48L320.2 48C330.2 48 339.5 52.5 345.4 60.5C381.8 109.9 512 292.8 512 384C512 490 426 576 320 576zM240 376C240 362.7 229.3 352 216 352C202.7 352 192 362.7 192 376C192 451.1 252.9 512 328 512C341.3 512 352 501.3 352 488C352 474.7 341.3 464 328 464C279.4 464 240 424.6 240 376z"/></svg>
+            <svg style={{width: 50, height: 50}} fill='#5080b8' stroke='#fff' stroke-width="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 576C214 576 128 490 128 384C128 292.8 258.2 109.9 294.6 60.5C300.5 52.5 309.8 48 319.8 48L320.2 48C330.2 48 339.5 52.5 345.4 60.5C381.8 109.9 512 292.8 512 384C512 490 426 576 320 576zM240 376C240 362.7 229.3 352 216 352C202.7 352 192 362.7 192 376C192 451.1 252.9 512 328 512C341.3 512 352 501.3 352 488C352 474.7 341.3 464 328 464C279.4 464 240 424.6 240 376z"/></svg>
             <span style={moreSectionItemTitleStyles}>Humidity</span>
             <span style={moreSectionItemValueStyles}>{data.humidity.toFixed(0)}%</span>
             {/* todo: make this a 1-5 scale */}
