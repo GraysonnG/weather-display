@@ -1,4 +1,4 @@
-import { OPEN_WEATHER_MAP_KEY } from "$env/static/private"
+import { OPEN_WEATHER_MAP_KEY, USE_FAKE_DATA } from "$env/static/private"
 import { exampleResponse } from "../temp/res"
 
 const apiURL = "https://api.openweathermap.org"
@@ -7,8 +7,8 @@ export const getOpenWeatherMapData = async (
     lat = 39.0321,
     lon = -77.4161
 ) => {
-    const res = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`)
-    const rawData = await res.json()
+    console.log(USE_FAKE_DATA === "true" ? "Using example response..." : "Using real data...")
+    const rawData = USE_FAKE_DATA === "true" ? exampleResponse : await (await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`)).json()
     const data = {
         current: {
             ...rawData.current,
