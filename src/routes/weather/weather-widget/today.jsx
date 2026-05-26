@@ -84,8 +84,8 @@ export const TodaySection = ({currentData, hourlyData}) => (<section style={sect
 
 const HourItem = ({data}) => {
     const currentDay = new Date()
-    const date = new Date(data.dt * 1000)
-    const time = getTimeString(date)
+    const dateUTC = new Date((data.dt + data.dt_offset) * 1000)
+    const time = getTimeString(dateUTC)
 
     return (<div style={hourStyles}>
         <div style={popStyles(data.pop)}></div>
@@ -122,7 +122,7 @@ const BigTempSection = ({data}) => {
  * @param {Date} date 
  */
 const getTimeString = (date) => {
-    const time24 = (date.getHours() + 1)
+    const time24 = (date.getUTCHours() + 1)
     const ampm = time24 >= 12 && time24 !== 24 ? "PM" : "AM"
     let time12 = time24 % 12
     if (time12 === 0) time12 = 12

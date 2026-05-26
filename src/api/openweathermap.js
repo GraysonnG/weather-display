@@ -11,11 +11,15 @@ export const getOpenWeatherMapData = async (
     const rawData = USE_FAKE_DATA === "true" ? exampleResponse : await (await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`)).json()
     const data = {
         current: {
+            timezone: rawData.timezone,
+            dt_offset: rawData.timezone_offset,
             ...rawData.current,
             today: rawData.daily[0],
         },
         hourly: [...rawData.hourly.slice(0, 12).map(h => ({
             ...h,
+            timezone: rawData.timezone,
+            dt_offset: rawData.timezone_offset,
             night: getNight(h, rawData.daily)
         }))],
         daily: [...rawData.daily.slice(1, 11)],
