@@ -3,6 +3,7 @@ import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { readFileSync } from "fs";
 import { getOpenWeatherMapData } from "../../api/openweathermap.js";
+import path from "path";
 import { dev } from "$app/environment";
 
 const getFont = (font) => {
@@ -13,17 +14,17 @@ const getFont = (font) => {
   return readFileSync(filePath);
 };
 
-const fonts = {
+const getFonts = () => ({
   Light: getFont("Light"),
   Regular: getFont("Regular"),
   Bold: getFont("Bold"),
   Black: getFont("Black"),
-};
+});
 
 export async function GET({ url }) {
   const data = await getOpenWeatherMapData();
   const title = url.searchParams.get("title") ?? "Hello World";
-
+  const fonts = getFonts();
   const svg = await satori(Layout(data), {
     width: 1600,
     height: 1200,

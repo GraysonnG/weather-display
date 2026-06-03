@@ -4,7 +4,7 @@ import { dev } from "$app/environment";
 
 export const loadImage = (relativePathFromStatic) => {
   const filePath = dev
-    ? path.resolve(ASSET_PATH, relativePathFromStatic)
+    ? path.resolve("static", relativePathFromStatic)
     : path.resolve(relativePathFromStatic);
 
   const split = relativePathFromStatic.split(".");
