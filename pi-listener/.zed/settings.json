@@ -1,0 +1,16 @@
+{
+  "lsp": {
+    "kotlin-language-server": {
+      "initialization_options": {
+        "storagePath": ".",
+      },
+      "settings": {
+        "kotlin": {
+          "workspace": {
+            "sourceRoots": ["src/main/kotlin"],
+          },
+        },
+      },
+    },
+  },
+}

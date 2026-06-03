@@ -1,5 +1,5 @@
 <script>
-    const endpoints = ["weather", "cat"]
+    const endpoints = ["weather", "cat"];
 </script>
 
 <section>
@@ -42,16 +42,16 @@
         overflow: hidden;
         aspect-ratio: 4/3;
         background-color: #333;
-        border-radius: .5em;
+        border-radius: 0.5em;
     }
 
     img {
         max-width: 100%;
-        border-radius: .5em;
+        border-radius: 0.5em;
     }
 
     span {
-        font-family: 'Courier New', Courier, monospace;
+        font-family: "Courier New", Courier, monospace;
         position: absolute;
         color: white;
         text-decoration: none;
