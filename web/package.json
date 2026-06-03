@@ -1,0 +1,23 @@
+{
+	"name": "weather-display",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev --open --host",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''"
+	},
+	"devDependencies": {
+		"@resvg/resvg-js": "^2.6.2",
+		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/kit": "^2.57.0",
+		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"@types/node": "^25.9.1",
+		"ditherjs": "^0.10.0",
+		"satori": "^0.26.0",
+		"svelte": "^5.55.2",
+		"vite": "^8.0.7"
+	}
+}
