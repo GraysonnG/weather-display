@@ -1,9 +1,12 @@
 import fs from "fs";
 import path from "path";
-import { ASSET_PATH } from "$env/static/private";
+import { dev } from "$app/environment";
 
 export const loadImage = (relativePathFromStatic) => {
-  const filePath = path.resolve(ASSET_PATH, relativePathFromStatic);
+  const filePath = dev
+    ? path.resolve(ASSET_PATH, relativePathFromStatic)
+    : path.resolve(relativePathFromStatic);
+
   const split = relativePathFromStatic.split(".");
   const ext = split[split.length - 1];
   const mimeType = {
@@ -18,7 +21,9 @@ export const loadImage = (relativePathFromStatic) => {
 };
 
 export const getAllImages = (relativePathFromStatic) => {
-  const dirPath = path.resolve(ASSET_PATH, relativePathFromStatic);
+  const dirPath = dev
+    ? path.resolve("static", relativePathFromStatic)
+    : path.resolve(relativePathFromStatic);
   const fileNames = fs.readdirSync(dirPath);
   return fileNames.map((name) => {
     const filePath = path.resolve(dirPath, name);
