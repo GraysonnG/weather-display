@@ -17,8 +17,9 @@ fun main() {
     embeddedServer(Netty, port = 9876) {
         routing {
             post("/online") {
-                val time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-                notify("\uD83D\uDFE2 Raspberry Pi Online", "Ready at $time")
+                val time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss a"))
+                val ip = call.request.local.remoteHost
+                notify("\uD83D\uDFE2 Raspberry Pi Online", "[$time] Ready at $ip")
                 call.respondText("ok")
             }
         }
