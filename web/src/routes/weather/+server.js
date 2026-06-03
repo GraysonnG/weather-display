@@ -2,26 +2,26 @@ import { Layout } from "./weather-widget/layout.jsx";
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { readFileSync } from "fs";
+import path from "path";
 import { getOpenWeatherMapData } from "../../api/openweathermap.js";
-import { dev } from "$app/environment";
+import { ASSET_PATH } from "$env/static/private";
 
-const getFont = (font) => {
-  return dev
-    ? readFileSync(`static/fonts/MonaSans/${font}.ttf`)
-    : readFileSync(`fonts/MonaSans/${font}.ttf`);
-};
+function getFont(font) {
+  console.log(ASSET_PATH);
+  return readFileSync(`${ASSET_PATH}/fonts/MonaSans/${font}.ttf`);
+}
 
-const fonts = {
+const getFonts = () => ({
   Light: getFont("Light"),
   Regular: getFont("Regular"),
   Bold: getFont("Bold"),
   Black: getFont("Black"),
-};
+});
 
 export async function GET({ url }) {
   const data = await getOpenWeatherMapData();
   const title = url.searchParams.get("title") ?? "Hello World";
-
+  const fonts = getFonts();
   const svg = await satori(Layout(data), {
     width: 1600,
     height: 1200,
