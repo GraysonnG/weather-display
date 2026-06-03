@@ -3,9 +3,12 @@ import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { readFileSync } from "fs";
 import { getOpenWeatherMapData } from "../../api/openweathermap.js";
+import { dev } from "$app/environment";
 
 const getFont = (font) => {
-  return readFileSync(`static/fonts/MonaSans/${font}.ttf`);
+  return dev
+    ? readFileSync(`static/fonts/MonaSans/${font}.ttf`)
+    : readFileSync(`fonts/MonaSans/${font}.ttf`);
 };
 
 const fonts = {
