@@ -9,7 +9,7 @@ import { dev } from "$app/environment";
 const getFont = (font) => {
   const filePath = dev
     ? path.resolve("static", `fonts/MonaSans/${font}.ttf`)
-    : path.resolve(`fonts/MonaSans/${font}.ttf`);
+    : path.resolve("build", `fonts/MonaSans/${font}.ttf`);
 
   return readFileSync(filePath);
 };
