@@ -3,7 +3,6 @@
 import { h, Fragment } from "../../../lib/jsx.js";
 import fs from "fs";
 import path from "path";
-import { loadImage } from "../../../helpers/imagehelper.js";
 
 const MAP = {
   200: "scattered-thunderstorms-day",
@@ -63,9 +62,21 @@ const MAP = {
   804: "cloudy",
 };
 
-export const getIconUrlFromCode = (code, night = false) => {
+export function getWeatherIconFromCode(code, night = false) {
   let iconName = MAP[`${code}`] ?? "clear-day";
   if (night) iconName = iconName.replaceAll("-day", "-night");
-  const data = loadImage(`weather/${iconName}.svg`);
-  return data;
-};
+  const images = import.meta.glob("$lib/weather/*.svg", {
+    eager: true,
+    query: "?inline",
+  });
+
+  for (const [key, value] of Object.entries(images)) {
+    if (key.includes(iconName)) {
+      return value.default;
+    }
+  }
+
+  console.log("Could not find matching icon, using clear instead!");
+
+  return images[0].default;
+}

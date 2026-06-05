@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx h */
 import { h, Fragment } from "../../lib/jsx.js";
-import { getAllImages, loadImage } from "../../helpers/imagehelper.js";
+import { getAllImages } from "../../helpers/imagehelper.js";
 
 const imgStyle = {
   width: "100%",
@@ -10,7 +10,12 @@ const imgStyle = {
 };
 
 export const Cat = () => {
-  const catImages = getAllImages("cats");
+  const catImages = Object.values(
+    import.meta.glob("$lib/cats/*.{png,jpg,jpeg}", {
+      eager: true,
+      query: "?inline",
+    }),
+  ).map((i) => i.default);
   const index = Math.round(Math.random() * (catImages.length - 1));
   console.log(`${index + 2}/${catImages.length}`);
   const imageToShow = catImages[index];

@@ -1,9 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx h */
-import { loadImage } from "../../../helpers/imagehelper.js";
 import { h, Fragment } from "../../../lib/jsx.js";
 import { TodaySection } from "./today.jsx";
 import { DailySection } from "./daily.jsx";
+import Cloudy from "$lib/backgrounds/cloudy.jpg?inline";
 
 const wrapperStyle = {
   display: "flex",
@@ -42,7 +42,7 @@ const imgStyle = {
 
 export const Layout = (data) => (
   <div style={wrapperStyle}>
-    <img style={imgStyle} src={loadImage("backgrounds/cloudy.jpg")} />
+    <img style={imgStyle} src={Cloudy} />
     <div style={layoutStyle}>
       <TodaySection currentData={data.current} hourlyData={data.hourly} />
       <DailySection data={data.daily} />

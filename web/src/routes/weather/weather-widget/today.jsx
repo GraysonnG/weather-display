@@ -2,7 +2,7 @@
 /** @jsx h */
 import { h, Fragment } from "../../../lib/jsx.js";
 import { TempChart } from "./chart.jsx";
-import { getIconUrlFromCode } from "./weather_icon.jsx";
+import { getWeatherIconFromCode } from "./weather_icon.jsx";
 
 const sectionStyles = {
   display: "flex",
@@ -98,7 +98,7 @@ const HourItem = ({ data }) => {
       </h2>
       <img
         style={{ width: "75%" }}
-        src={getIconUrlFromCode(data.weather[0].id, data.night)}
+        src={getWeatherIconFromCode(data.weather[0].id, data.night)}
         alt={data.weather[0].description}
       />
     </div>
@@ -115,7 +115,7 @@ const BigTempSection = ({ data }) => {
       <div style={bigTempItemStyles}>
         <img
           style={{ width: "95%", position: "absolute" }}
-          src={getIconUrlFromCode(data.today.weather[0].id, false)}
+          src={getWeatherIconFromCode(data.today.weather[0].id, false)}
           alt={data.today.weather[0].description}
         />
         <div

@@ -1,8 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx h */
-import { loadImage } from "../../../helpers/imagehelper.js";
 import { mmToInches } from "../../../helpers/imperial.js";
-import { getIconUrlFromCode } from "./weather_icon.jsx";
+import { getIconUrlFromCode, getWeatherIconFromCode } from "./weather_icon.jsx";
 import { h, Fragment } from "../../../lib/jsx.js";
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -122,7 +121,7 @@ const DayItem = ({ data, last }) => {
       </div>
       <img
         style={{ height: 150, marginTop: 30 }}
-        src={getIconUrlFromCode(data.weather[0].id, false)}
+        src={getWeatherIconFromCode(data.weather[0].id, false)}
       />
       <span
         style={{
