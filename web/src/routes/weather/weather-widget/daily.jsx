@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx h */
 import { mmToInches } from "../../../helpers/imperial.js";
-import { getIconUrlFromCode, getWeatherIconFromCode } from "./weather_icon.jsx";
+import { getWeatherIconFromCode } from "./weather_icon.jsx";
 import { h, Fragment } from "../../../lib/jsx.js";
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
