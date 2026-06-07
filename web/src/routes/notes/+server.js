@@ -12,6 +12,8 @@ let store;
  * @property {string} id
  * @property {number} time_posted
  * @property {string} text
+ * @property {string} owner
+ * @property {string} color
  */
 
 /**
@@ -81,6 +83,11 @@ const removeNotes = (payload_notes, store_notes) => {
   return map;
 };
 
+/**
+ * Checks to see if the call is authorized
+ * @param {{ headers: Map<String, String> }} request
+ * @returns {boolean}
+ */
 const checkAPIKey = (request) => {
   return request.headers.get("x-api-key") === NOTES_SECRET_KEY;
 };
@@ -97,6 +104,11 @@ const fail = (message) =>
     headers: { "Content-Type": "application/json" },
   });
 
+/**
+ *
+ * @param {Record<string, Note>} notes
+ * @returns
+ */
 const response = (notes) => json({ notes });
 
 export async function GET({ request }) {
@@ -114,7 +126,7 @@ export async function GET({ request }) {
 
 /**
  * Accepts a {Note} and adds it to the note store and then returns the updated note list.
- * @param {*} data
+ * @param {{ request: { json: () => {notes: Note[]} } }} data
  */
 export async function POST({ request }) {
   if (!checkAPIKey(request)) return unauthorized();
