@@ -82,7 +82,6 @@ const removeNotes = (payload_notes, store_notes) => {
 };
 
 const checkAPIKey = (request) => {
-  console.log(request.headers.get("x-api-key"), NOTES_SECRET_KEY);
   return request.headers.get("x-api-key") === NOTES_SECRET_KEY;
 };
 
@@ -98,6 +97,8 @@ const fail = (message) =>
     headers: { "Content-Type": "application/json" },
   });
 
+const response = (notes) => json({ notes });
+
 export async function GET({ request }) {
   if (!checkAPIKey(request)) return unauthorized();
 
@@ -108,7 +109,7 @@ export async function GET({ request }) {
     return json([]);
   }
 
-  return json({ notes });
+  return response(notes);
 }
 
 /**
@@ -138,7 +139,7 @@ export async function POST({ request }) {
     const updatedNotes = action(payload.notes, notes);
     await setNotes(updatedNotes);
 
-    return json({ notes: updatedNotes });
+    return response(updatedNotes);
   } else {
     return fail("notes is required");
   }
