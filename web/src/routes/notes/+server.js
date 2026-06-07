@@ -1,5 +1,6 @@
 import { getStore } from "@netlify/blobs";
-import { json, fail } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
+import { NOTES_SECRET_KEY } from "$env/static/private";
 
 const STORE_KEY = "notes";
 const CACHE_KEY = "cache";
@@ -80,7 +81,26 @@ const removeNotes = (payload_notes, store_notes) => {
   return map;
 };
 
-export async function GET() {
+const checkAPIKey = (request) => {
+  console.log(request.headers.get("x-api-key"), NOTES_SECRET_KEY);
+  return request.headers.get("x-api-key") === NOTES_SECRET_KEY;
+};
+
+const unauthorized = () =>
+  new Response(JSON.stringify({ error: "unauthorized" }), {
+    status: 401,
+    headers: { "Content-Type": "application/json" },
+  });
+
+const fail = (message) =>
+  new Response(JSON.stringify({ error: message }), {
+    status: 400,
+    headers: { "Content-Type": "application/json" },
+  });
+
+export async function GET({ request }) {
+  if (!checkAPIKey(request)) return unauthorized();
+
   const notes = await getNotes();
 
   if (notes == null) {
@@ -96,16 +116,23 @@ export async function GET() {
  * @param {*} data
  */
 export async function POST({ request }) {
+  if (!checkAPIKey(request)) return unauthorized();
+
   const payload = await request.json();
 
   if (payload.notes) {
+    for (const note of payload.notes) {
+      if (!note.id || !note.text || !note.time_posted)
+        return fail("invalid payload");
+    }
+
     console.log(payload.action, payload.notes);
     const actions = {
       add: addNotes,
       remove: removeNotes,
     };
     const action = actions[payload.action];
-    if (!action) return fail(400, { error: true, message: "unknown action" });
+    if (!action) return fail("unknown action");
 
     const notes = await getNotes();
     const updatedNotes = action(payload.notes, notes);
@@ -113,9 +140,6 @@ export async function POST({ request }) {
 
     return json({ notes: updatedNotes });
   } else {
-    return fail(400, {
-      error: true,
-      message: "note is required.",
-    });
+    return fail("notes is required");
   }
 }
