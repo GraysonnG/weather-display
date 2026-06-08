@@ -28,7 +28,8 @@ enum class NoteColor(@param:ColorRes val colorResId: Int) {
     Yellow(R.color.golden_yellow),
     Orange(R.color.warm_orange),
     Purple(R.color.soft_purple),
-    Pink(R.color.blush_pink);
+    Pink(R.color.blush_pink),
+    Black(R.color.deep_black);
 
     @Composable
     fun toColor() = colorResource(this.colorResId)

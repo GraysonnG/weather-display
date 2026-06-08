@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Violet Notes</string>
+    <string name="setup_hello">Hello!</string>
+    <string name="setup_part_1_prompt">"Let's get setup on Violet Notes!"</string>
+    <string name="setup_part_2_prompt">Who are you?</string>
+    <string name="setup_part_2_input_placeholder">"Your name…"</string>
+    <string name="setup_part_1_button_text">Next</string>
+    <string name="setup_part_2_button_text">Done</string>
 </resources>

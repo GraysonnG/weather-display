@@ -9,15 +9,13 @@ plugins {
 android {
     namespace = "com.blanktheevil.violetnotes"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.blanktheevil.violetnotes"
         minSdk = 31
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -46,6 +44,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
