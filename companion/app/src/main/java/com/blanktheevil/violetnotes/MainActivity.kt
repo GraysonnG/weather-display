@@ -1,29 +1,47 @@
 package com.blanktheevil.violetnotes
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.blanktheevil.violetnotes.ui.pages.CreateNotePage
+import com.blanktheevil.violetnotes.ui.pages.NotesScreen
 import com.blanktheevil.violetnotes.ui.pages.SetupPage
 import com.blanktheevil.violetnotes.ui.theme.VioletNotesTheme
 import com.blanktheevil.violetnotes.viewmodels.NotesViewModel
@@ -35,15 +53,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VioletNotesTheme {
+                val snackbarHostState = remember { SnackbarHostState() }
                 val vm = koinViewModel<NotesViewModel>()
-//                val notes by vm.notes.collectAsState()
-//                val pendingNotes by vm.pendingNotes.collectAsState()
                 val username by vm.username.collectAsState()
                 val loading by vm.loading.collectAsState()
+                val notes by vm.notes.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    vm.events.collect { event ->
+                        when (event) {
+                            is NotesViewModel.UIEvent.ShowToast -> {
+                                snackbarHostState.showSnackbar(event.message)
+                            }
+                        }
+                    }
+                }
 
                 val homeState by remember { derivedStateOf {
                     when {
-                        loading -> HomeState.Loading
+                        loading && notes.isEmpty() -> HomeState.Loading
                         username.isNullOrEmpty() -> HomeState.Setup
                         else -> HomeState.Ready
                     }
@@ -60,7 +88,10 @@ class MainActivity : ComponentActivity() {
                             }
 
                             HomeState.Ready -> {
-                                TempTesting(vm)
+                                NotesScreen(
+                                    snackbarHostState = snackbarHostState,
+                                    notesViewModel = vm
+                                )
                             }
                         }
                     }
@@ -79,35 +110,6 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
                 .size(300.dp)
         )
-    }
-
-    @Composable
-    private fun TempTesting(
-        viewModel: NotesViewModel,
-    ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            floatingActionButton = {
-
-            }
-        ) { innerPadding ->
-            val notes by viewModel.notes.collectAsState()
-
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                notes.forEach {
-                    Column {
-                        Text("text: ${it.text}")
-                        Text("id: ${it.id}")
-                        Text("time_posted: ${it.timePosted}")
-                    }
-                }
-            }
-        }
     }
 
     enum class HomeState {

@@ -12,6 +12,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import com.blanktheevil.violetnotes.data.NoteColor
+import com.blanktheevil.violetnotes.ui.DisplayNote
+import com.blanktheevil.violetnotes.ui.toDisplayNote
+import com.blanktheevil.violetnotes.ui.toDisplayNotes
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import java.util.UUID
 
 class NotesViewModel(
     private val notesRepository: NotesRepository,
@@ -19,17 +27,17 @@ class NotesViewModel(
 ): ViewModel() {
     private val sharedPrefs = context.getSharedPreferences("LOCAL", Context.MODE_PRIVATE)
 
-    private val _notes = MutableStateFlow<Notes>(emptyList())
+    private val _notes = MutableStateFlow<List<DisplayNote>>(emptyList())
     val notes = _notes.asStateFlow()
-
-    private val _pendingNotes = MutableStateFlow<List<String>>(emptyList())
-    val pendingNotes = _pendingNotes.asStateFlow()
 
     private val _username = MutableStateFlow<String?>(null)
     val username = _username.asStateFlow()
 
     private val _loading = MutableStateFlow(true)
     val loading = _loading.asStateFlow()
+
+    private val _events = MutableSharedFlow<UIEvent>()
+    val events = _events.asSharedFlow()
 
     init {
         Log.d(NotesViewModel::class.simpleName, "getNotes")
@@ -40,18 +48,67 @@ class NotesViewModel(
         }
     }
 
-    fun refresh() = updateState { notesRepository.getNotes() }
-
-    fun addNote(note: Note) = updateState {
-        _pendingNotes.value += note.id
-        notesRepository.addNotes(listOf(note)).also {
-            _pendingNotes.value -= note.id
+    fun refresh() = viewModelScope.launch {
+        _loading.value = true
+        when (val res = notesRepository.getNotes()) {
+            is Either.Success -> {
+                _notes.value = res.data.toDisplayNotes().sortByAge()
+                _loading.value = false
+            }
+            is Either.Error -> {
+                _loading.value = false
+                _events.emit(
+                    UIEvent.ShowToast("Could not get notes!", true)
+                )
+            }
         }
     }
 
-    fun removeNote(note: Note) = updateState {
-        notesRepository.removeNotes(listOf(note))
-    }
+    fun addNote(text: String, color: NoteColor) = viewModelScope.launch {
+        val uuid = UUID.randomUUID().toString()
+        val note = Note(
+            id = uuid,
+            text = text,
+            timePosted = System.currentTimeMillis(),
+            owner = username.value!!,
+            color = color
+        )
+        _notes.value += note.toDisplayNote(pending = true)
+        when (val res = notesRepository.addNotes(listOf(note))) {
+            is Either.Success -> _notes.value = res.data.toDisplayNotes().sortByAge()
+            is Either.Error -> {
+                // send even to ui to show a toast
+                _events.emit(
+                    UIEvent.ShowToast("Could not add your note!", true)
+                )
+                _notes.value = _notes.value.filter { it.id != uuid }.sortByAge()
+            }
+        }
+    }.let{}
+
+    fun removeNote(displayNote: DisplayNote) = viewModelScope.launch {
+        _notes.value = (_notes.value.filterNot { it.id == displayNote.id } + displayNote.copy(pending = true))
+            .sortByAge()
+
+        delay(2000)
+        when (val res = notesRepository.removeNotes(listOf(
+            Note(
+                id = displayNote.id,
+                text = displayNote.text,
+                timePosted = displayNote.createdTime,
+                owner = displayNote.author
+            )
+        ))) {
+            is Either.Success -> _notes.value = res.data.toDisplayNotes().sortByAge()
+            is Either.Error -> {
+                _events.emit(
+                    UIEvent.ShowToast("Could not remove your note!", true)
+                )
+                _notes.value = (_notes.value.filter { it.id != displayNote.id } + displayNote)
+                    .sortByAge()
+            }
+        }
+    }.let{}
 
     fun updateUsername(username: String) {
         _username.value = username
@@ -69,24 +126,20 @@ class NotesViewModel(
             }
         ) {
             is Either.Success -> {
-                _notes.value = res.data
+                _notes.value = res.data.toDisplayNotes().sortByAge()
             }
 
             is Either.Error -> {
-                // idk dawg maybe show a toast?
+                _events.emit(
+                    UIEvent.ShowToast("Could not get notes!", true)
+                )
             }
         }
     }
 
-    private fun updateState(update: suspend () -> Either<Notes>) = viewModelScope.launch {
-        when (val res = update()) {
-            is Either.Success -> {
-                _notes.value = res.data
-            }
+    private fun List<DisplayNote>.sortByAge() = sortedByDescending { it.createdTime }
 
-            is Either.Error -> {
-                // idk dawg maybe show a toast?
-            }
-        }
-    }.let {}
+    sealed class UIEvent {
+        data class ShowToast(val message: String, val isError: Boolean = false): UIEvent()
+    }
 }
