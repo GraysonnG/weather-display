@@ -1,8 +1,9 @@
 import { getConnectionString, getDatabase } from "@netlify/database";
 import { json } from "@sveltejs/kit";
-import { NOTES_SECRET_KEY } from "$env/static/private";
+import { neon } from "@neondatabase/serverless";
+import { NOTES_SECRET_KEY, NEON_CONNECTION_STRING } from "$env/static/private";
 
-const db = getDatabase();
+const sql = neon(NEON_CONNECTION_STRING);
 
 /**
  * @typedef {Object} Note
@@ -20,7 +21,7 @@ const db = getDatabase();
  */
 
 const ensureTable = async () => {
-  await db.sql`
+  await sql`
     CREATE TABLE IF NOT EXISTS notes (
       id TEXT PRIMARY KEY,
       time_posted BIGINT NOT NULL,
@@ -36,7 +37,7 @@ const ensureTable = async () => {
  */
 const getNotes = async () => {
   await ensureTable();
-  const rows = await db.sql`SELECT * FROM notes`;
+  const rows = await sql`SELECT * FROM notes`;
   const map = {};
   rows.forEach((row) => {
     map[row.id] = row;
@@ -47,7 +48,7 @@ const getNotes = async () => {
 const upsertNotes = async (notes) => {
   await ensureTable();
   for (const note of notes) {
-    await db.sql`
+    await sql`
       INSERT INTO notes (id, time_posted, text, owner, color)
       VALUES (${note.id}, ${note.time_posted}, ${note.text}, ${note.owner}, ${note.color})
       ON CONFLICT (id) DO UPDATE SET
@@ -62,7 +63,7 @@ const upsertNotes = async (notes) => {
 const deleteNotes = async (notes) => {
   await ensureTable();
   for (const note of notes) {
-    await db.sql`DELETE FROM notes WHERE id = ${note.id}`;
+    await sql`DELETE FROM notes WHERE id = ${note.id}`;
   }
 };
 
