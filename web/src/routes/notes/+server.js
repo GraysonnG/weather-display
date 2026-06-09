@@ -1,17 +1,16 @@
-import { getStore } from "@netlify/blobs";
+import { getConnectionString, getDatabase } from "@netlify/database";
 import { json } from "@sveltejs/kit";
 import { NOTES_SECRET_KEY } from "$env/static/private";
 
-const STORE_KEY = "notes";
-const CACHE_KEY = "cache";
-
-let store;
+const db = getDatabase();
 
 /**
  * @typedef {Object} Note
  * @property {string} id
  * @property {number} time_posted
  * @property {string} text
+ * @property {string} owner
+ * @property {string} color
  */
 
 /**
@@ -20,67 +19,58 @@ let store;
  * @property {Note[]} notes
  */
 
-const getNoteStore = () => {
-  if (!store) store = getStore(STORE_KEY);
-  return store;
+const ensureTable = async () => {
+  await db.sql`
+    CREATE TABLE IF NOT EXISTS notes (
+      id TEXT PRIMARY KEY,
+      time_posted BIGINT NOT NULL,
+      text TEXT NOT NULL,
+      owner TEXT NOT NULL,
+      color TEXT NOT NULL
+    )
+  `;
 };
 
 /**
- * @returns {Array<Note>}
+ * @returns {Record<string, Note>}
  */
 const getNotes = async () => {
-  const store = getNoteStore();
-  const cache = await store.get(CACHE_KEY, { type: "json" });
-  if (!cache || !cache.notes) {
-    console.log("Initializing Notes: {}");
-    setNotes({});
-    return {};
+  await ensureTable();
+  const rows = await db.sql`SELECT * FROM notes`;
+  const map = {};
+  rows.forEach((row) => {
+    map[row.id] = row;
+  });
+  return map;
+};
+
+const upsertNotes = async (notes) => {
+  await ensureTable();
+  for (const note of notes) {
+    await db.sql`
+      INSERT INTO notes (id, time_posted, text, owner, color)
+      VALUES (${note.id}, ${note.time_posted}, ${note.text}, ${note.owner}, ${note.color})
+      ON CONFLICT (id) DO UPDATE SET
+        time_posted = EXCLUDED.time_posted,
+        text = EXCLUDED.text,
+        owner = EXCLUDED.owner,
+        color = EXCLUDED.color
+    `;
   }
-  return cache.notes;
 };
-// (await getNoteStore().get(CACHE_KEY, { type: "json" })).notes;
 
-const setNotes = async (notes) => {
-  await getNoteStore().set(
-    CACHE_KEY,
-    JSON.stringify({
-      notes: notes,
-    }),
-  );
+const deleteNotes = async (notes) => {
+  await ensureTable();
+  for (const note of notes) {
+    await db.sql`DELETE FROM notes WHERE id = ${note.id}`;
+  }
 };
 
 /**
- *
- * @param {Note[]} payload_notes notes from the payload
- * @param {Record<string, Note>} store_notes notes from the netlify store
- * @returns {Record<string, Note>}
+ * Checks to see if the call is authorized
+ * @param {{ headers: Map<String, String> }} request
+ * @returns {boolean}
  */
-const addNotes = (payload_notes, store_notes) => {
-  const map = { ...store_notes };
-
-  payload_notes.forEach((note) => {
-    map[note.id] = note;
-  });
-
-  return map;
-};
-
-/**
- *
- * @param {Note[]} payload_notes notes from the payload
- * @param {Record<string, Note>} store_notes notes from the netlify store
- * @returns {Record<string, Note>}
- */
-const removeNotes = (payload_notes, store_notes) => {
-  const map = { ...store_notes };
-
-  payload_notes.forEach((note) => {
-    delete map[note.id];
-  });
-
-  return map;
-};
-
 const checkAPIKey = (request) => {
   return request.headers.get("x-api-key") === NOTES_SECRET_KEY;
 };
@@ -97,49 +87,42 @@ const fail = (message) =>
     headers: { "Content-Type": "application/json" },
   });
 
+/**
+ * @param {Record<string, Note>} notes
+ */
 const response = (notes) => json({ notes });
 
 export async function GET({ request }) {
   if (!checkAPIKey(request)) return unauthorized();
-
   const notes = await getNotes();
-
-  if (notes == null) {
-    await setNotes([]);
-    return json([]);
-  }
-
   return response(notes);
 }
 
 /**
- * Accepts a {Note} and adds it to the note store and then returns the updated note list.
- * @param {*} data
+ * @param {{ request: { json: () => {notes: Note[]} } }} data
  */
 export async function POST({ request }) {
   if (!checkAPIKey(request)) return unauthorized();
-
   const payload = await request.json();
-
   if (payload.notes) {
     for (const note of payload.notes) {
       if (!note.id || !note.text || !note.time_posted)
         return fail("invalid payload");
     }
-
     console.log(payload.action, payload.notes);
     const actions = {
-      add: addNotes,
-      remove: removeNotes,
+      add: async (payload_notes) => {
+        await upsertNotes(payload_notes);
+      },
+      remove: async (payload_notes) => {
+        await deleteNotes(payload_notes);
+      },
     };
     const action = actions[payload.action];
     if (!action) return fail("unknown action");
-
+    await action(payload.notes);
     const notes = await getNotes();
-    const updatedNotes = action(payload.notes, notes);
-    await setNotes(updatedNotes);
-
-    return response(updatedNotes);
+    return response(notes);
   } else {
     return fail("notes is required");
   }

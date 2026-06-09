@@ -3,6 +3,7 @@ from inky.auto import auto
 from PIL import Image
 from io import BytesIO
 
+print("Initializing load_weather.py")
 display = auto()
 print("Display Auto")
 response = requests.get("https://creative-cheesecake-3607b7.netlify.app/weather")

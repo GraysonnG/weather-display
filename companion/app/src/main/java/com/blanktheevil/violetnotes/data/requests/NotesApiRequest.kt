@@ -4,7 +4,7 @@ import com.blanktheevil.violetnotes.data.Notes
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-sealed class NotesApiRequest(
+open class NotesApiRequest(
     val action: String,
     val notes: Notes,
 ) {

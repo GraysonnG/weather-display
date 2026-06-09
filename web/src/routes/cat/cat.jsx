@@ -1,7 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx h */
 import { h, Fragment } from "../../lib/jsx.js";
-import { getAllImages } from "../../helpers/imagehelper.js";
 
 const imgStyle = {
   width: "100%",
