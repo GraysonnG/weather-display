@@ -10,8 +10,8 @@ import retrofit2.http.POST
 
 interface NotesApi {
     companion object {
-//        const val URL = "https://creative-cheesecake-3607b7.netlify.app"
-        const val URL = "http://192.168.1.168:5173"
+        const val URL = "https://creative-cheesecake-3607b7.netlify.app"
+//        const val URL = "http://192.168.1.168:5173"
     }
 
     @GET("notes")
