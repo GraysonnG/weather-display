@@ -1,4 +1,3 @@
-import { getConnectionString, getDatabase } from "@netlify/database";
 import { json } from "@sveltejs/kit";
 import { neon } from "@neondatabase/serverless";
 import { NOTES_SECRET_KEY, NEON_CONNECTION_STRING } from "$env/static/private";
