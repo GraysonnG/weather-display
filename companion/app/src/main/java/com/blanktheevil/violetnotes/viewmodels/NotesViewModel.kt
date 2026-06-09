@@ -90,7 +90,6 @@ class NotesViewModel(
         _notes.value = (_notes.value.filterNot { it.id == displayNote.id } + displayNote.copy(pending = true))
             .sortByAge()
 
-        delay(2000)
         when (val res = notesRepository.removeNotes(listOf(
             Note(
                 id = displayNote.id,

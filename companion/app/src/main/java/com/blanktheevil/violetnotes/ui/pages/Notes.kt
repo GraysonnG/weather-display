@@ -116,47 +116,53 @@ private fun NotesScreenContent(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            items(notes, key = { it.id }) {
-                val color = colorResource(it.color)
-                val onSurface = MaterialTheme.colorScheme.onSurface
-                val contentColor = onSurface.copy(alpha = if (it.pending) 0.5f else 1f)
+        if (notes.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(notes, key = { it.id }) {
+                    val color = colorResource(it.color)
+                    val onSurface = MaterialTheme.colorScheme.onSurface
+                    val contentColor = onSurface.copy(alpha = if (it.pending) 0.5f else 1f)
 
-                CompositionLocalProvider(
-                    LocalContentColor provides contentColor,
-                ) {
-                    Row(
-                        Modifier
-                            .animateItem()
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(5.dp))
-                            .background(color.copy(alpha = 0.2f))
-                            .padding(8.dp)
+                    CompositionLocalProvider(
+                        LocalContentColor provides contentColor,
                     ) {
-                        Box(modifier = Modifier
-                            .fillMaxHeight()
-                            .width(10.dp)
-                            .background(color)
-                        )
+                        Row(
+                            Modifier
+                                .animateItem()
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(color.copy(alpha = 0.2f))
+                                .padding(8.dp)
+                        ) {
+                            Box(modifier = Modifier
+                                .fillMaxHeight()
+                                .width(10.dp)
+                                .background(color)
+                            )
 
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = it.text)
-                            Text(text = "-${it.author}", Modifier.align(Alignment.End))
-                        }
-                        if (it.pending) {
-                            LoadingIndicator(Modifier
-                                .padding(12.dp)
-                                .size(24.dp), color = color)
-                        } else {
-                            IconButton(onClick = { onRemoveNote(it) }) {
-                                Icon(painter = painterResource(R.drawable.round_close_24), contentDescription = null)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = it.text)
+                                Text(text = "-${it.author}", Modifier.align(Alignment.End))
+                            }
+                            if (it.pending) {
+                                LoadingIndicator(Modifier
+                                    .padding(12.dp)
+                                    .size(24.dp), color = color)
+                            } else {
+                                IconButton(onClick = { onRemoveNote(it) }) {
+                                    Icon(painter = painterResource(R.drawable.round_close_24), contentDescription = null)
+                                }
                             }
                         }
                     }
                 }
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Create a note by pressing the + icon!", color = LocalContentColor.current.copy(alpha = 0.5f))
             }
         }
     }
@@ -164,7 +170,7 @@ private fun NotesScreenContent(
 
 @Composable
 @PreviewLightDark
-private fun PreviewNotesScreen() = DefaultPreview {
+private fun PreviewNotesScreenFull() = DefaultPreview {
     NotesScreenContent(
         listOf(
             DisplayNote("0", "Hello World! With really really long text that causes an overflow on to the next line and maybe has some new lines of its own.\n\nlike this", "blank", NoteColor.Red.colorResId, createdTime = 0L, pending = false, editing = false),
@@ -173,6 +179,18 @@ private fun PreviewNotesScreen() = DefaultPreview {
             DisplayNote("3", "Hello World 4", "blank", NoteColor.Yellow.colorResId, createdTime = 0L, pending = false, editing = false),
             DisplayNote("4", "Hello World 5", "blank", NoteColor.Orange.colorResId, createdTime = 0L, pending = false, editing = false)
         ),
+        isRefreshing = false,
+        onRefresh = {}
+    ) {
+
+    }
+}
+
+@Composable
+@PreviewLightDark
+private fun PreviewNotesScreenEmpty() = DefaultPreview {
+    NotesScreenContent(
+        emptyList(),
         isRefreshing = false,
         onRefresh = {}
     ) {
