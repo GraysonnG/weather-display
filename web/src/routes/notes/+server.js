@@ -1,8 +1,6 @@
 import { json } from "@sveltejs/kit";
-import { neon } from "@neondatabase/serverless";
-import { NOTES_SECRET_KEY, NEON_CONNECTION_STRING } from "$env/static/private";
-
-const sql = neon(NEON_CONNECTION_STRING);
+import { NOTES_SECRET_KEY } from "$env/static/private";
+import { deleteNotes, getNotes, insertNotes } from "./notes_api.js";
 
 /**
  * @typedef {Object} Note
@@ -12,59 +10,6 @@ const sql = neon(NEON_CONNECTION_STRING);
  * @property {string} owner
  * @property {string} color
  */
-
-/**
- * @typedef {Object} Payload
- * @property {string} action
- * @property {Note[]} notes
- */
-
-const ensureTable = async () => {
-  await sql`
-    CREATE TABLE IF NOT EXISTS notes (
-      id TEXT PRIMARY KEY,
-      time_posted BIGINT NOT NULL,
-      text TEXT NOT NULL,
-      owner TEXT NOT NULL,
-      color TEXT NOT NULL
-    )
-  `;
-};
-
-/**
- * @returns {Record<string, Note>}
- */
-const getNotes = async () => {
-  await ensureTable();
-  const rows = await sql`SELECT * FROM notes`;
-  const map = {};
-  rows.forEach((row) => {
-    map[row.id] = row;
-  });
-  return map;
-};
-
-const upsertNotes = async (notes) => {
-  await ensureTable();
-  for (const note of notes) {
-    await sql`
-      INSERT INTO notes (id, time_posted, text, owner, color)
-      VALUES (${note.id}, ${note.time_posted}, ${note.text}, ${note.owner}, ${note.color})
-      ON CONFLICT (id) DO UPDATE SET
-        time_posted = EXCLUDED.time_posted,
-        text = EXCLUDED.text,
-        owner = EXCLUDED.owner,
-        color = EXCLUDED.color
-    `;
-  }
-};
-
-const deleteNotes = async (notes) => {
-  await ensureTable();
-  for (const note of notes) {
-    await sql`DELETE FROM notes WHERE id = ${note.id}`;
-  }
-};
 
 /**
  * Checks to see if the call is authorized
@@ -99,7 +44,7 @@ export async function GET({ request }) {
 }
 
 /**
- * @param {{ request: { json: () => {notes: Note[]} } }} data
+ * @param {{ request: { json: () => {notes: Note[], action: string} } }} data
  */
 export async function POST({ request }) {
   if (!checkAPIKey(request)) return unauthorized();
@@ -112,7 +57,7 @@ export async function POST({ request }) {
     console.log(payload.action, payload.notes);
     const actions = {
       add: async (payload_notes) => {
-        await upsertNotes(payload_notes);
+        await insertNotes(payload_notes);
       },
       remove: async (payload_notes) => {
         await deleteNotes(payload_notes);
