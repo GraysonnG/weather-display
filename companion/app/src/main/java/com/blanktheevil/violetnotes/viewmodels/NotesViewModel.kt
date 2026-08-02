@@ -16,7 +16,6 @@ import com.blanktheevil.violetnotes.data.NoteColor
 import com.blanktheevil.violetnotes.ui.DisplayNote
 import com.blanktheevil.violetnotes.ui.toDisplayNote
 import com.blanktheevil.violetnotes.ui.toDisplayNotes
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import java.util.UUID
@@ -86,6 +85,28 @@ class NotesViewModel(
         }
     }.let{}
 
+    fun updateNote(uuid: String, text: String, color: NoteColor) = viewModelScope.launch {
+        val originalDisplayNote = _notes.value.firstOrNull { it.id == uuid }?.copy() ?: return@launch
+        val note = originalDisplayNote.toNote().copy(
+            text = text,
+            color = color,
+        )
+
+        _notes.value = (_notes.value.filter { it.id != uuid } + note.toDisplayNote(pending = true))
+            .sortByAge()
+
+        when (val res = notesRepository.addNotes(listOf(note))) {
+            is Either.Success -> _notes.value = res.data.toDisplayNotes().sortByAge()
+            is Either.Error -> {
+                _events.emit(
+                    UIEvent.ShowToast("Could not edit your note!", isError = true)
+                )
+                _notes.value = (_notes.value.filter { it.id != uuid } + originalDisplayNote)
+                    .sortByAge()
+            }
+        }
+    }.let{}
+
     fun removeNote(displayNote: DisplayNote) = viewModelScope.launch {
         _notes.value = (_notes.value.filterNot { it.id == displayNote.id } + displayNote.copy(pending = true))
             .sortByAge()
@@ -137,6 +158,14 @@ class NotesViewModel(
     }
 
     private fun List<DisplayNote>.sortByAge() = sortedByDescending { it.createdTime }
+
+    private fun DisplayNote.toNote() = Note(
+        id = this.id,
+        text = this.text,
+        timePosted = this.createdTime,
+        owner = this.author,
+        color = NoteColor.fromColorRes(this.color),
+    )
 
     sealed class UIEvent {
         data class ShowToast(val message: String, val isError: Boolean = false): UIEvent()

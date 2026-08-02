@@ -2,6 +2,7 @@ package com.blanktheevil.violetnotes.data
 
 import androidx.annotation.ColorRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.blanktheevil.violetnotes.R
 import com.squareup.moshi.Json
@@ -30,6 +31,11 @@ enum class NoteColor(@param:ColorRes val colorResId: Int) {
     Purple(R.color.soft_purple),
     Pink(R.color.blush_pink),
     Black(R.color.deep_black);
+
+    companion object {
+        fun fromColorRes(colorRes: Int): NoteColor =
+            NoteColor.entries.firstOrNull { it.colorResId == colorRes } ?: Red
+    }
 
     @Composable
     fun toColor() = colorResource(this.colorResId)

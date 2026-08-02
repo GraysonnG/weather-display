@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,15 +40,34 @@ import com.blanktheevil.violetnotes.ui.DefaultPreview
 
 @Composable
 fun CreateNotePage(
-    addNote: (String, NoteColor) -> Unit,
+    isEdit: Boolean,
+    submit: (String, NoteColor) -> Unit,
+    initialText: String = "",
+    initialColor: NoteColor = NoteColor.Red,
     dismiss: () -> Unit,
 ) {
-    var selectedColor by remember { mutableStateOf(NoteColor.Red) }
-    var text by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(initialColor) }
+    var text by remember { mutableStateOf(initialText) }
+    val titleText by remember { derivedStateOf {
+        if (isEdit) {
+            "Edit Note"
+        } else {
+            "New Note"
+        }
+    } }
+
+    val buttonText by remember { derivedStateOf {
+        if (isEdit) {
+            "Update"
+        } else {
+            "Add"
+        }
+    }}
+
 
     AlertDialog(
         onDismissRequest = dismiss,
-        title = { Text("New Note") },
+        title = { Text(titleText) },
         text = {
             Column {
                 OutlinedTextField(
@@ -112,7 +130,7 @@ fun CreateNotePage(
         },
         confirmButton = {
             val enabled by remember { derivedStateOf { text.isNotBlank() } }
-            Button(enabled = enabled, onClick = { addNote(text, selectedColor) }) { Text("Add") }
+            Button(enabled = enabled, onClick = { submit(text, selectedColor) }) { Text(buttonText) }
         },
         dismissButton = {
             TextButton(onClick = { dismiss() }) { Text("Cancel") }
@@ -123,5 +141,5 @@ fun CreateNotePage(
 @Composable
 @PreviewLightDark
 private fun PreviewCreateNotePage() = DefaultPreview {
-    CreateNotePage({_,_->}, {})
+    CreateNotePage(isEdit = true, initialText="hello", initialColor = NoteColor.Pink, submit = {_,_->}) {}
 }

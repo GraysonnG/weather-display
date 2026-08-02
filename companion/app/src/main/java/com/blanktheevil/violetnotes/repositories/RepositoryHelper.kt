@@ -9,7 +9,9 @@ import kotlinx.coroutines.withContext
 
 suspend fun <T> makeCall(call: suspend () -> T): Either<T> = withContext(Dispatchers.IO) {
     try {
-        eitherSuccess(call())
+        eitherSuccess(call()).also {
+            Log.d("MakeCall", "Success: $it")
+        }
     } catch (e: Exception) {
         Log.e("MakeCall", e.message, e)
         eitherError(e)
