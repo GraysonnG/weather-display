@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,6 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -48,6 +52,7 @@ import com.blanktheevil.violetnotes.R
 import com.blanktheevil.violetnotes.data.NoteColor
 import com.blanktheevil.violetnotes.ui.DefaultPreview
 import com.blanktheevil.violetnotes.ui.DisplayNote
+import com.blanktheevil.violetnotes.ui.components.Note
 import com.blanktheevil.violetnotes.viewmodels.NotesViewModel
 
 @Composable
@@ -56,7 +61,6 @@ fun NotesScreen(
     notesViewModel: NotesViewModel
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
-    var editableNote by remember { mutableStateOf<DisplayNote?>(null) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -85,9 +89,7 @@ fun NotesScreen(
             onRemoveNote = notesViewModel::removeNote,
             isRefreshing = loading,
             onRefresh = notesViewModel::refresh,
-            onNoteClick = { note ->
-                editableNote = note
-            }
+            onNoteUpdated = notesViewModel::updateNote
         )
 
         if (showCreateDialog) {
@@ -95,18 +97,6 @@ fun NotesScreen(
                 notesViewModel.addNote(text, color)
                 showCreateDialog = false
             }) { showCreateDialog = false }
-        }
-
-        editableNote?.let { imNote ->
-            CreateNotePage(
-                isEdit = true,
-                initialText = imNote.text,
-                initialColor = NoteColor.fromColorRes(imNote.color),
-                submit = { text, color ->
-                    notesViewModel.updateNote(imNote.id, text, color)
-                    editableNote = null
-                }
-            ) { editableNote = null }
         }
     }
 }
@@ -119,7 +109,7 @@ private fun NotesScreenContent(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onRemoveNote: (DisplayNote) -> Unit,
-    onNoteClick: (DisplayNote) -> Unit,
+    onNoteUpdated: (String, String, NoteColor) -> Unit,
 ) {
     PullToRefreshBox(
         modifier = modifier.fillMaxSize(),
@@ -132,48 +122,7 @@ private fun NotesScreenContent(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(notes, key = { it.id }) {
-                    val color = colorResource(it.color)
-                    val onSurface = MaterialTheme.colorScheme.onSurface
-                    val contentColor = onSurface.copy(alpha = if (it.pending) 0.5f else 1f)
-
-                    CompositionLocalProvider(
-                        LocalContentColor provides contentColor,
-                    ) {
-                        Row(
-                            Modifier
-                                .animateItem()
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(color.copy(alpha = 0.2f))
-                                .clickable(
-                                    role = Role.Button,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    onNoteClick(it)
-                                }
-                                .padding(8.dp)
-                        ) {
-                            Box(modifier = Modifier
-                                .fillMaxHeight()
-                                .width(10.dp)
-                                .background(color)
-                            )
-
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(text = it.text)
-                                Text(text = "-${it.author}", Modifier.align(Alignment.End))
-                            }
-                            if (it.pending) {
-                                LoadingIndicator(Modifier
-                                    .padding(12.dp)
-                                    .size(24.dp), color = color)
-                            } else {
-                                IconButton(onClick = { onRemoveNote(it) }) {
-                                    Icon(painter = painterResource(R.drawable.round_close_24), contentDescription = null)
-                                }
-                            }
-                        }
-                    }
+                    Note(it, onNoteUpdated, onRemoveNote)
                 }
             }
         } else {
@@ -184,6 +133,8 @@ private fun NotesScreenContent(
     }
 }
 
+
+
 @Composable
 @PreviewLightDark
 private fun PreviewNotesScreenFull() = DefaultPreview {
@@ -191,14 +142,14 @@ private fun PreviewNotesScreenFull() = DefaultPreview {
         listOf(
             DisplayNote("0", "Hello World! With really really long text that causes an overflow on to the next line and maybe has some new lines of its own.\n\nlike this", "blank", NoteColor.Red.colorResId, createdTime = 0L, pending = false, editing = false),
             DisplayNote("1", "Hello World 2", "blank", NoteColor.Green.colorResId, createdTime = 0L, pending = true, editing = false),
-            DisplayNote("2", "Hello World 3", "blank", NoteColor.Blue.colorResId, createdTime = 0L, pending = false, editing = false),
+            DisplayNote("2", "Hello World 3", "blank", NoteColor.Blue.colorResId, createdTime = 0L, pending = false, editing = true),
             DisplayNote("3", "Hello World 4", "blank", NoteColor.Yellow.colorResId, createdTime = 0L, pending = false, editing = false),
             DisplayNote("4", "Hello World 5", "blank", NoteColor.Orange.colorResId, createdTime = 0L, pending = false, editing = false)
         ),
         isRefreshing = false,
         onRefresh = {},
         onRemoveNote = {},
-        onNoteClick = {},
+        onNoteUpdated = {_,_,_->},
     )
 }
 
@@ -210,6 +161,6 @@ private fun PreviewNotesScreenEmpty() = DefaultPreview {
         isRefreshing = false,
         onRefresh = {},
         onRemoveNote = {},
-        onNoteClick = {},
+        onNoteUpdated = {_,_,_->},
     )
 }
